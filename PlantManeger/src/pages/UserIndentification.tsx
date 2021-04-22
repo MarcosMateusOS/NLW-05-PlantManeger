@@ -1,132 +1,143 @@
-import React,{useState} from 'react';
-import {StyleSheet,SafeAreaView,View,Text,TextInput,KeyboardAvoidingView,TouchableWithoutFeedback,Platform,Keyboard} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
-import {Button} from '../components/Button';
+import { Button } from '../components/Button';
 
 
-export function UserIndentification(){
+
+
+export function UserIndentification() {
 
     const navigation = useNavigation();
-    const[isFocused, setIsFocused] = useState(false);
-    const[isFilled,setisFilled] = useState(false);
-    const[name,setName] = useState<string>();
+    const [isFocused, setIsFocused] = useState(false);
+    const [isFilled, setisFilled] = useState(false);
+    const [name, setName] = useState<string>();
 
-    function handleSubmit(){
+    async function handleSubmit() {
+
+
+        if (!name)
+            return Alert.alert('Me diz como chamar você 😐')
+
+
+        await AsyncStorage.setItem('@platmanager:user', name);
+
         navigation.navigate('Confirmation');
     }
 
-    function handleInputBlur(){
+    function handleInputBlur() {
         setIsFocused(false);
         setisFilled(!!name);
     }
 
-    function handleInputFocus(){
-           setIsFocused(true);
+    function handleInputFocus() {
+        setIsFocused(true);
     }
 
-    function handleInputChange(value: string){
+    function handleInputChange(value: string) {
         setisFilled(!!value);
         setName(value);
     }
 
 
-    return(
+    return (
         <SafeAreaView style={styles.container}>
-            <KeyboardAvoidingView 
-                    style={styles.container}
-                    behavior={Platform.OS === 'ios' ?'padding':'heading'}
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
             >
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.content}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.content}>
 
-                    <View style={styles.form}>
+                        <View style={styles.form}>
 
-                        <View style={styles.hearder}>
-                            <Text style={styles.emoji}> 
-                                {isFilled ? '😊' : '🥺'}
-                            </Text>
+                            <View style={styles.hearder}>
+                                <Text style={styles.emoji}>
+                                    {isFilled ? '😊' : '🥺'}
+                                </Text>
 
-                            <Text style={styles.title}>
-                                Como podemos{'\n'}
+                                <Text style={styles.title}>
+                                    Como podemos{'\n'}
                                 chamar você?
                             </Text>
-                        </View>
-                    
+                            </View>
 
-                        <TextInput 
-                            style={[
-                                styles.input,
-                                (isFocused || isFilled) && {borderColor: colors.green}
-                            ]}
-                            placeholder="Digite um nome"
-                            onBlur={handleInputBlur}
-                            onFocus={handleInputFocus}
-                            onChange = {handleInputChange}
-                        />  
 
-                        <View style={styles.buttonView}>
-                            <Button
-                                title="Confirmar" 
-                                onPress={handleSubmit}
+                            <TextInput
+                                style={[
+                                    styles.input,
+                                    (isFocused || isFilled) && { borderColor: colors.green }
+                                ]}
+                                placeholder="Digite um nome"
+                                onBlur={handleInputBlur}
+                                onFocus={handleInputFocus}
+                                onChangeText={handleInputChange}
                             />
+
+                            <View style={styles.buttonView}>
+                                <Button
+                                    title="Confirmar"
+                                    onPress={handleSubmit}
+                                />
+                            </View>
+
                         </View>
+
+
 
                     </View>
-
-                
-
-                </View>
-            </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        width:'100%',
-        alignItems:'center',
-        justifyContent:'space-around'
+    container: {
+        flex: 1,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around'
     },
-    content:{
-        flex:1,
-        width:'100%',
+    content: {
+        flex: 1,
+        width: '100%',
     },
-    form:{
-        flex:1,
-        justifyContent:'center',
-        paddingHorizontal:54,
-        alignItems:'center',
-        width:'100%',
+    form: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingHorizontal: 54,
+        alignItems: 'center',
+        width: '100%',
     },
-    hearder:{
-        alignItems:'center',
+    hearder: {
+        alignItems: 'center',
     },
-    emoji:{
-        fontSize:44
+    emoji: {
+        fontSize: 44
     },
-    input:{
-        borderBottomWidth:1,
+    input: {
+        borderBottomWidth: 1,
         borderColor: colors.gray,
-        color:colors.heading,
-        width:'100%',
-        fontSize:18,
-        marginTop:50,
-        padding:10,
+        color: colors.heading,
+        width: '100%',
+        fontSize: 18,
+        marginTop: 50,
+        padding: 10,
         textAlign: 'center',
     },
-    title:{
-        fontSize:32,
+    title: {
+        fontSize: 32,
         textAlign: 'center',
-        color:colors.heading,
-        fontFamily:fonts.heading, 
-        marginTop:20
+        color: colors.heading,
+        fontFamily: fonts.heading,
+        marginTop: 20
     },
-    buttonView:{
-        width:'100%',
+    buttonView: {
+        width: '100%',
         marginTop: 40,
         paddingHorizontal: 20
     }
